@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Liver Disease Risk Assessment - MediPredict AI{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Header -->
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="bg-primary text-white p-3 rounded-4 d-flex align-items-center justify-content-center" style="width: 55px; height: 55px;">
+                        <i class="fa-solid fa-stethoscope fs-4 animate-pulse"></i>
+                    </div>
+                    <div>
+                        <h2 class="fw-bold mb-0">Liver Disease Risk Assessment</h2>
+                        <p class="text-secondary mb-0">Input hepatic panel biomarkers to compute preliminary liver dysfunction probability.</p>
+                    </div>
+                </div>
+
+                <!-- Form Card -->
+                <div class="card p-4 shadow-sm border-light rounded-4 bg-white">
+                    <form action="{{ url_for('predict_liver') }}" method="POST" class="needs-validation" novalidate>
+                        <div class="row g-4">
+                            <!-- Bilirubin -->
+                            <div class="col-md-6">
+                                <label for="Bilirubin" class="form-label small fw-semibold">Serum Bilirubin (mg/dL)</label>
+                                <input type="number" class="form-control" id="Bilirubin" name="Bilirubin" required min="0.1" max="15.0" step="0.01" placeholder="e.g. 1.0">
+                                <div class="form-text small">Total serum bilirubin level. Standard: 0.1 - 1.2 mg/dL.</div>
+                                <div class="invalid-feedback">Please enter a valid Bilirubin value between 0.1 and 15.0.</div>
+                            </div>
+
+                            <!-- Albumin -->
+                            <div class="col-md-6">
+                                <label for="Albumin" class="form-label small fw-semibold">Serum Albumin (g/dL)</label>
+                                <input type="number" class="form-control" id="Albumin" name="Albumin" required min="1.5" max="6.0" step="0.01" placeholder="e.g. 4.1">
+                                <div class="form-text small">Albumin protein concentration. Standard: 3.5 - 5.0 g/dL.</div>
+                                <div class="invalid-feedback">Please enter a valid Albumin level between 1.5 and 6.0.</div>
+                            </div>
+
+                            <!-- Alkaline Phosphatase -->
+                            <div class="col-md-6">
+                                <label for="AlkalinePhos" class="form-label small fw-semibold">Alkaline Phosphatase (ALP) (IU/L)</label>
+                                <input type="number" class="form-control" id="AlkalinePhos" name="AlkalinePhos" required min="30" max="600" step="any" placeholder="e.g. 95">
+                                <div class="form-text small">ALP enzyme level. Standard range: 44 - 147 IU/L.</div>
+                                <div class="invalid-feedback">Please enter a valid ALP value between 30 and 600.</div>
+                            </div>
+
+                            <!-- SGOT -->
+                            <div class="col-md-6">
+                                <label for="SGOT" class="form-label small fw-semibold">SGOT / AST (IU/L)</label>
+                                <input type="number" class="form-control" id="SGOT" name="SGOT" required min="5" max="500" step="any" placeholder="e.g. 35">
+                                <div class="form-text small">Serum glutamic-oxaloacetic transaminase. Standard: 5 - 40 IU/L.</div>
+                                <div class="invalid-feedback">Please enter a valid AST/SGOT value between 5 and 500.</div>
+                            </div>
+
+                            <!-- Age -->
+                            <div class="col-md-6">
+                                <label for="Age" class="form-label small fw-semibold">Age (years)</label>
+                                <input type="number" class="form-control" id="Age" name="Age" required min="18" max="110" step="1" placeholder="e.g. 48">
+                                <div class="form-text small">Patient age in years. Models are trained on adult cohorts (18+).</div>
+                                <div class="invalid-feedback">Please enter a valid age between 18 and 110.</div>
+                            </div>
+
+                            <!-- Model Selector -->
+                            <div class="col-md-6">
+                                <label for="model_used" class="form-label small fw-semibold">Machine Learning Model</label>
+                                <select class="form-select" id="model_used" name="model_used">
+                                    <option value="Random Forest" selected>Random Forest Classifier (Ensemble Trees)</option>
+                                    <option value="Logistic Regression">Logistic Regression Classifier (Linear Probability)</option>
+                                </select>
+                                <div class="form-text small">Select the classifier engine. Accuracy comparison is available in results.</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 justify-content-end mt-5 border-top pt-4">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 text-white">
+                                Run Prediction <i class="fa-solid fa-wand-magic-sparkles ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

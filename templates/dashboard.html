@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Dashboard - MediPredict AI{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container">
+        <!-- Dashboard Header -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <h1 class="fw-bold mb-1">Patient Dashboard</h1>
+                <p class="text-secondary mb-0">Record health vitals, run predictive screenings, and review assessment logs.</p>
+            </div>
+            
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ url_for('predict_diabetes') }}" class="btn btn-primary btn-sm rounded-pill px-3 py-2 text-white">
+                    <i class="fa-solid fa-droplet me-1"></i> Diabetes Test
+                </a>
+                <a href="{{ url_for('predict_heart') }}" class="btn btn-danger btn-sm rounded-pill px-3 py-2 text-white">
+                    <i class="fa-solid fa-heart-pulse me-1"></i> Cardiology Test
+                </a>
+                <a href="{{ url_for('predict_kidney') }}" class="btn btn-success btn-sm rounded-pill px-3 py-2 text-white">
+                    <i class="fa-solid fa-hand-holding-medical me-1"></i> Nephrology Test
+                </a>
+                <a href="{{ url_for('predict_liver') }}" class="btn btn-info btn-sm rounded-pill px-3 py-2 text-white">
+                    <i class="fa-solid fa-stethoscope me-1"></i> Liver Test
+                </a>
+            </div>
+        </div>
+
+        <!-- ML Engine Warning -->
+        {% if not ml_status %}
+            <div class="alert alert-warning border-warning-subtle shadow-sm mb-4 d-flex align-items-center" role="alert">
+                <i class="fa-solid fa-triangle-exclamation text-warning fs-3 me-3"></i>
+                <div>
+                    <h6 class="fw-bold mb-1">Machine Learning Engine Offline</h6>
+                    <p class="mb-0 small text-secondary">The underlying classification scalers and serialization models (`.pkl`) were not detected. Please run <code>python train_models.py</code> in the terminal to train and serialize the Scikit-learn models before running predictions.</p>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Stat Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card p-3 border-light shadow-sm d-flex flex-row align-items-center gap-3 bg-white">
+                    <div class="icon-box bg-primary-subtle text-primary rounded-circle" style="width: 50px; height: 50px;">
+                        <i class="fa-solid fa-file-medical-alt fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-secondary small mb-1">Total Screenings</h6>
+                        <h3 class="fw-bold mb-0">{{ total_preds }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card p-3 border-light shadow-sm d-flex flex-row align-items-center gap-3 bg-white">
+                    <div class="icon-box bg-danger-subtle text-danger rounded-circle" style="width: 50px; height: 50px;">
+                        <i class="fa-solid fa-circle-exclamation fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-secondary small mb-1">High Risk Instances</h6>
+                        <h3 class="fw-bold mb-0 text-danger">{{ high_risk_count }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card p-3 border-light shadow-sm d-flex flex-row align-items-center gap-3 bg-white">
+                    <div class="icon-box bg-success-subtle text-success rounded-circle" style="width: 50px; height: 50px;">
+                        <i class="fa-solid fa-circle-check fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-secondary small mb-1">Low Risk Instances</h6>
+                        <h3 class="fw-bold mb-0 text-success">{{ low_risk_count }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Analytics Chart -->
+            <div class="col-lg-6">
+                <div class="card p-4 border-light shadow-sm bg-white h-100">
+                    <h5 class="fw-bold mb-3">Risk Distribution Analysis</h5>
+                    {% if total_preds > 0 %}
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="riskSummaryChart"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5 text-secondary">
+                            <i class="fa-solid fa-chart-pie fs-1 text-light-emphasis mb-3"></i>
+                            <p class="small">No historical data available to build visualization charts.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Historical Trend Chart -->
+            <div class="col-lg-6">
+                <div class="card p-4 border-light shadow-sm bg-white h-100">
+                    <h5 class="fw-bold mb-3">Assessment Timeline</h5>
+                    {% if total_preds > 0 %}
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="riskHistoryChart"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5 text-secondary">
+                            <i class="fa-solid fa-chart-line fs-1 text-light-emphasis mb-3"></i>
+                            <p class="small">No timeline entries found. Complete a diagnostic scan first.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- History Table -->
+        <div class="card border-light shadow-sm bg-white p-4 mt-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 border-bottom pb-3">
+                <h5 class="fw-bold mb-0">Diagnostic History Logs</h5>
+                
+                <!-- Search and Filters Form -->
+                <form action="{{ url_for('dashboard') }}" method="GET" class="d-flex flex-wrap gap-2 align-items-center">
+                    <div class="input-group input-group-sm" style="max-width: 250px;">
+                        <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-secondary"></i></span>
+                        <input type="text" class="form-control border-start-0 bg-light" name="search" placeholder="Search result..." value="{{ request.args.get('search', '') }}">
+                    </div>
+                    
+                    <select name="disease" class="form-select form-select-sm bg-light border-light-subtle" style="width: auto;" onchange="this.form.submit()">
+                        <option value="">All Diseases</option>
+                        <option value="Diabetes" {% if request.args.get('disease') == 'Diabetes' %}selected{% endif %}>Diabetes</option>
+                        <option value="Heart Disease" {% if request.args.get('disease') == 'Heart Disease' %}selected{% endif %}>Heart Disease</option>
+                        <option value="Kidney Disease" {% if request.args.get('disease') == 'Kidney Disease' %}selected{% endif %}>Kidney Disease</option>
+                        <option value="Liver Disease" {% if request.args.get('disease') == 'Liver Disease' %}selected{% endif %}>Liver Disease</option>
+                    </select>
+                    
+                    {% if request.args.get('search') or request.args.get('disease') %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary btn-sm rounded-pill"><i class="fa-solid fa-xmark"></i> Clear</a>
+                    {% endif %}
+                </form>
+            </div>
+
+            <!-- Table -->
+            {% if history %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Assessed Disease</th>
+                                <th>Model Selected</th>
+                                <th>Risk Probability</th>
+                                <th>Prediction Outcome</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in history %}
+                                <tr>
+                                    <td class="text-secondary small">{{ p.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            {% if p.disease_type == 'Diabetes' %}
+                                                <i class="fa-solid fa-droplet text-primary"></i>
+                                            {% elif p.disease_type == 'Heart Disease' %}
+                                                <i class="fa-solid fa-heart-pulse text-danger"></i>
+                                            {% elif p.disease_type == 'Liver Disease' %}
+                                                <i class="fa-solid fa-stethoscope text-info"></i>
+                                            {% else %}
+                                                <i class="fa-solid fa-hand-holding-medical text-success"></i>
+                                            {% endif %}
+                                            <strong>{{ p.disease_type }}</strong>
+                                        </div>
+                                    </td>
+                                    <td class="small text-secondary">{{ p.model_used }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="progress rounded-pill flex-grow-1" style="height: 6px; width: 60px;">
+                                                <div class="progress-bar {% if p.prediction_result == 'High Risk' %}bg-danger{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ p.probability }}%;"></div>
+                                            </div>
+                                            <span class="small font-monospace">{{ p.probability }}%</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if p.prediction_result == 'High Risk' %}
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">High Risk</span>
+                                        {% else %}
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Low Risk</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="dropdown">
+                                            <button class="btn btn-light btn-sm rounded-circle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width:30px; height:30px;">
+                                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-light-subtle">
+                                                <li><a class="dropdown-item small" href="{{ url_for('result', prediction_id=p.id) }}"><i class="fa-solid fa-eye me-2 text-primary"></i>View Full Result</a></li>
+                                                <li><a class="dropdown-item small" href="{{ url_for('download_report', prediction_id=p.id) }}"><i class="fa-solid fa-file-pdf me-2 text-danger"></i>Download PDF</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5 text-secondary">
+                    <i class="fa-solid fa-file-excel fs-2 mb-3 text-light-emphasis"></i>
+                    <p class="small mb-0">No health screenings match the criteria. Complete a screening to begin tracking.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+{% if total_preds > 0 %}
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const timelineLabels = [];
+        const timelineProbs = [];
+
+        {% for p in history[:10]|reverse %}
+            timelineLabels.push("{{ p.created_at.strftime('%m-%d') }}");
+            timelineProbs.push({{ p.probability }});
+        {% endfor %}
+
+        // Counts for Pie Chart
+        let diabetesCount = 0;
+        let heartCount = 0;
+        let kidneyCount = 0;
+        let liverCount = 0;
+        
+        {% for p in history %}
+            if ("{{ p.disease_type }}" === "Diabetes") diabetesCount++;
+            if ("{{ p.disease_type }}" === "Heart Disease") heartCount++;
+            if ("{{ p.disease_type }}" === "Kidney Disease") kidneyCount++;
+            if ("{{ p.disease_type }}" === "Liver Disease") liverCount++;
+        {% endfor %}
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // 1. Doughnut Chart
+            const ctxSummary = document.getElementById('riskSummaryChart').getContext('2d');
+            new Chart(ctxSummary, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Diabetes', 'Heart Disease', 'Kidney Disease', 'Liver Disease'],
+                    datasets: [{
+                        data: [diabetesCount, heartCount, kidneyCount, liverCount],
+                        backgroundColor: [
+                            'rgba(13, 110, 253, 0.85)', // Blue
+                            'rgba(220, 53, 69, 0.85)',  // Red
+                            'rgba(25, 135, 84, 0.85)',  // Green
+                            'rgba(13, 202, 240, 0.85)'  // Cyan/Info
+                        ],
+                        borderWidth: 2,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // 2. Timeline Line Chart
+            const ctxTimeline = document.getElementById('riskHistoryChart').getContext('2d');
+            new Chart(ctxTimeline, {
+                type: 'line',
+                data: {
+                    labels: timelineLabels,
+                    datasets: [{
+                        label: 'Risk Probability (%)',
+                        data: timelineProbs,
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#0d6efd',
+                        pointBorderColor: '#fff',
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Probability (%)',
+                                font: { size: 10 }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date',
+                                font: { size: 10 }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+{% endif %}
+{% endblock %}

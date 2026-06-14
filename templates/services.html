@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Our Services - MediPredict AI{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">Diagnostic Coverage</span>
+            <h1 class="fw-bold">Clinical Prediction Services</h1>
+            <p class="text-secondary max-width-600 mx-auto">Explore our screening modules, understanding what clinical measurements are analyzed by the machine learning engine.</p>
+        </div>
+
+        <!-- Services Details -->
+        <div class="row g-5">
+            <!-- Diabetes Assessment -->
+            <div class="col-12">
+                <div class="card border-0 shadow-sm p-4 bg-light-subtle rounded-4">
+                    <div class="row align-items-center g-4">
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <div class="bg-primary text-white p-2.5 rounded-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                    <i class="fa-solid fa-droplet fs-5"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">Diabetes Mellitus Screening</h3>
+                            </div>
+                            <p class="text-secondary">
+                                Diabetes Mellitus is a group of metabolic diseases characterized by high blood sugar levels over a prolonged period. Early detection allows for immediate lifestyle adaptations and glycemic management.
+                            </p>
+                            
+                            <h6 class="fw-bold text-dark mt-4">Biomarkers Analyzed:</h6>
+                            <div class="row g-2 text-secondary small">
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-primary me-2"></i><strong>Glucose:</strong> Plasma glucose concentration after an oral glucose tolerance test.</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-primary me-2"></i><strong>Blood Pressure:</strong> Diastolic blood pressure (mmHg).</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-primary me-2"></i><strong>BMI:</strong> Body mass index (weight in kg / (height in m)²).</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-primary me-2"></i><strong>Insulin:</strong> 2-Hour serum insulin (mu U/ml).</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-primary me-2"></i><strong>Age:</strong> Age in years.</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-center text-lg-end">
+                            <a href="{% if current_user.is_authenticated %}{{ url_for('predict_diabetes') }}{% else %}{{ url_for('login') }}{% endif %}" class="btn btn-primary rounded-pill px-4 py-2.5 shadow-sm text-white">
+                                Start Diabetes Scan <i class="fa-solid fa-arrow-pointer ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heart Disease Assessment -->
+            <div class="col-12">
+                <div class="card border-0 shadow-sm p-4 bg-light-subtle rounded-4">
+                    <div class="row align-items-center g-4">
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <div class="bg-danger text-white p-2.5 rounded-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                    <i class="fa-solid fa-heart-pulse fs-5"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">Cardiovascular Risk Screening</h3>
+                            </div>
+                            <p class="text-secondary">
+                                Coronary heart disease remains a leading cause of mortality globally. By assessing critical hemodynamics and lipids, our models can classify risk index thresholds for cardiac episodes.
+                            </p>
+                            
+                            <h6 class="fw-bold text-dark mt-4">Biomarkers Analyzed:</h6>
+                            <div class="row g-2 text-secondary small">
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-danger me-2"></i><strong>Age & Gender:</strong> Fundamental physiological hazard parameters.</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-danger me-2"></i><strong>Cholesterol:</strong> Serum cholesterol density (mg/dL).</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-danger me-2"></i><strong>Resting Blood Pressure:</strong> Resting systolic blood pressure on admission (mmHg).</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-danger me-2"></i><strong>Maximum Heart Rate:</strong> Achieved cardiac rate during exercise tolerance testing.</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-center text-lg-end">
+                            <a href="{% if current_user.is_authenticated %}{{ url_for('predict_heart') }}{% else %}{{ url_for('login') }}{% endif %}" class="btn btn-danger rounded-pill px-4 py-2.5 shadow-sm text-white">
+                                Start Cardiology Scan <i class="fa-solid fa-arrow-pointer ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kidney Disease Assessment -->
+            <div class="col-12">
+                <div class="card border-0 shadow-sm p-4 bg-light-subtle rounded-4">
+                    <div class="row align-items-center g-4">
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <div class="bg-success text-white p-2.5 rounded-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                    <i class="fa-solid fa-hand-holding-medical fs-5"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">Chronic Kidney Disease (CKD) Screening</h3>
+                            </div>
+                            <p class="text-secondary">
+                                Chronic Kidney Disease represents progressive loss in renal function. Because CKD is highly asymptomatic in its early stages, monitoring filtration indicators like creatinine is essential.
+                            </p>
+                            
+                            <h6 class="fw-bold text-dark mt-4">Biomarkers Analyzed:</h6>
+                            <div class="row g-2 text-secondary small">
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-success me-2"></i><strong>Blood Urea:</strong> Waste product created by protein metabolism (mg/dL).</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-success me-2"></i><strong>Serum Creatinine:</strong> Direct indicator of glomerular filtration rate (mg/dL).</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-success me-2"></i><strong>Hemoglobin:</strong> Red blood cell oxygen transport protein (g/dL).</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-success me-2"></i><strong>Blood Pressure:</strong> Systemic arterial blood pressure (mmHg).</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-center text-lg-end">
+                            <a href="{% if current_user.is_authenticated %}{{ url_for('predict_kidney') }}{% else %}{{ url_for('login') }}{% endif %}" class="btn btn-success rounded-pill px-4 py-2.5 shadow-sm text-white">
+                                Start Nephrology Scan <i class="fa-solid fa-arrow-pointer ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liver Disease Assessment -->
+            <div class="col-12">
+                <div class="card border-0 shadow-sm p-4 bg-light-subtle rounded-4">
+                    <div class="row align-items-center g-4">
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <div class="bg-info text-white p-2.5 rounded-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                    <i class="fa-solid fa-stethoscope fs-5"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">Hepatology (Liver) Risk Screening</h3>
+                            </div>
+                            <p class="text-secondary">
+                                Hepatic impairments such as cirrhosis, hepatitis, or fatty liver disease can lead to major systemic complications. Standard screening tools analyze bilirubin levels and specific liver enzymes to monitor structural and functional stability.
+                            </p>
+                            
+                            <h6 class="fw-bold text-dark mt-4">Biomarkers Analyzed:</h6>
+                            <div class="row g-2 text-secondary small">
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-info me-2"></i><strong>Bilirubin:</strong> Heme breakdown waste product; signals excretion health (mg/dL).</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-info me-2"></i><strong>Albumin:</strong> Primary protein synthesized by the liver (g/dL).</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-info me-2"></i><strong>Alkaline Phosphatase:</strong> Enzyme related to bile ducts and bone health (IU/L).</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-info me-2"></i><strong>SGOT/AST:</strong> Enzyme released upon cellular damage in liver parenchyma (IU/L).</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-center text-lg-end">
+                            <a href="{% if current_user.is_authenticated %}{{ url_for('predict_liver') }}{% else %}{{ url_for('login') }}{% endif %}" class="btn btn-info rounded-pill px-4 py-2.5 shadow-sm text-white">
+                                Start Hepatology Scan <i class="fa-solid fa-arrow-pointer ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

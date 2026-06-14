@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Screening Results - MediPredict AI{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <!-- Header / Back to Dashboard Link -->
+        <div class="mb-4">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-link text-secondary text-decoration-none p-0 small">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="row g-4">
+            <!-- Risk Gauge & Core Prediction -->
+            <div class="col-lg-5">
+                <div class="card p-4 border-light shadow-sm bg-white text-center h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <h4 class="fw-bold mb-1">{{ pred.disease_type }} Assessment</h4>
+                        <p class="text-secondary small">Evaluated using {{ pred.model_used }}</p>
+                        
+                        <!-- Visual Gauge Dial -->
+                        <div class="d-flex justify-content-center my-4 position-relative">
+                            <div class="risk-circle-wrapper">
+                                <svg class="risk-svg" viewBox="0 0 100 100">
+                                    <circle class="risk-bg" cx="50" cy="50" r="45"></circle>
+                                    <circle class="risk-progress {% if pred.prediction_result == 'High Risk' %}progress-danger{% else %}progress-success{% endif %}" 
+                                            cx="50" cy="50" r="45" 
+                                            style="stroke-dasharray: 282.7; stroke-dashoffset: calc(282.7 - (282.7 * {{ pred.probability }}) / 100);"></circle>
+                                </svg>
+                                <div class="risk-circle-text">
+                                    <h2 class="fw-extrabold mb-0">{{ pred.probability }}%</h2>
+                                    <small class="text-secondary uppercase small tracking-widest">Risk Score</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Result Badge -->
+                        <div class="mb-4">
+                            {% if pred.prediction_result == 'High Risk' %}
+                                <span class="badge bg-danger text-white px-4 py-2 rounded-pill fs-6 shadow-sm border border-danger animate-pulse">
+                                    <i class="fa-solid fa-circle-exclamation me-1"></i> High Risk
+                                </span>
+                            {% else %}
+                                <span class="badge bg-success text-white px-4 py-2 rounded-pill fs-6 shadow-sm border border-success">
+                                    <i class="fa-solid fa-circle-check me-1"></i> Low Risk
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <p class="text-secondary small leading-relaxed px-2">
+                            Our models indicate a <strong>{{ pred.probability }}%</strong> probability of clinical anomalies associated with {{ pred.disease_type.lower() }} based on the submitted vitals.
+                        </p>
+                    </div>
+
+                    <!-- PDF & Email Buttons -->
+                    <div class="mt-4 pt-4 border-top border-light-subtle">
+                        <div class="d-flex flex-column gap-2">
+                            <a href="{{ url_for('download_report', prediction_id=pred.id) }}" class="btn btn-primary rounded-pill w-100 py-2 text-white">
+                                <i class="fa-solid fa-file-pdf me-2"></i> Download PDF Report
+                            </a>
+                            
+                            <!-- Email Report Form -->
+                            <div class="mt-3 text-start">
+                                <label for="emailInput" class="form-label small fw-semibold">Email Report to Doctor / Patient</label>
+                                <div class="input-group input-group-sm">
+                                    <input type="email" class="form-control rounded-start-pill bg-light border-light-subtle" id="emailInput" placeholder="recipient@domain.com" value="{{ current_user.email }}">
+                                    <button class="btn btn-outline-primary rounded-end-pill px-3" type="button" id="sendEmailBtn" onclick="sendEmailReport({{ pred.id }})">
+                                        <i class="fa-solid fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                                <div id="email-feedback" class="small mt-1 d-none"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- clinical input parameters & recommendations -->
+            <div class="col-lg-7">
+                <div class="d-flex flex-column gap-4 h-100">
+                    <!-- Submitted Vitals -->
+                    <div class="card p-4 border-light shadow-sm bg-white">
+                        <h5 class="fw-bold mb-3"><i class="fa-solid fa-dna text-primary me-2"></i>Clinical Parameters</h5>
+                        
+                        <div class="row g-3">
+                            {% for key, val in inputs.items() %}
+                                <div class="col-sm-6">
+                                    <div class="p-2.5 bg-light rounded-3 d-flex justify-content-between align-items-center">
+                                        <span class="text-secondary small">{{ key }}</span>
+                                        <span class="fw-bold text-dark font-monospace">{{ val }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Model Comparison Block -->
+                    <div class="card p-4 border-light shadow-sm bg-white">
+                        <h5 class="fw-bold mb-3"><i class="fa-solid fa-scale-balanced text-primary me-2"></i>Algorithm Cross-Comparison</h5>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered align-middle text-center small mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Model Algorithm</th>
+                                        <th>Risk Score</th>
+                                        <th>Classification Outcome</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-primary fw-semibold">
+                                        <td>{{ pred.model_used }} (Selected)</td>
+                                        <td>{{ pred.probability }}%</td>
+                                        <td>
+                                            {% if pred.prediction_result == 'High Risk' %}
+                                                <span class="text-danger">High Risk</span>
+                                            {% else %}
+                                                <span class="text-success">Low Risk</span>
+                                            </td>
+                                            {% endif %}
+                                    </tr>
+                                    <tr>
+                                        <td>{{ alt_model_type }}</td>
+                                        <td>{{ alt_prob }}%</td>
+                                        <td>
+                                            {% if alt_result == 'High Risk' %}
+                                                <span class="text-danger">High Risk</span>
+                                            {% else %}
+                                                <span class="text-success">Low Risk</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="form-text small mt-2">Cross-verifying outputs against alternative classifiers increases screening confidence bounds.</div>
+                    </div>
+
+                    <!-- Clinical Recommendations -->
+                    <div class="card p-4 border-light shadow-sm bg-white flex-grow-1">
+                        <h5 class="fw-bold mb-3"><i class="fa-solid fa-clipboard-list text-success me-2"></i>Clinical Advisory & Recommendations</h5>
+                        
+                        <ul class="list-unstyled mb-0">
+                            {% for r in recs %}
+                                <li class="d-flex align-items-start gap-3 mb-3">
+                                    <div class="bg-success-subtle text-success p-1 rounded-circle d-flex align-items-center justify-content-center mt-1" style="width: 20px; height: 20px;">
+                                        <i class="fa-solid fa-check fs-8"></i>
+                                    </div>
+                                    <span class="text-secondary small leading-relaxed">{{ r }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function sendEmailReport(predictionId) {
+    const email = document.getElementById("emailInput").value.trim();
+    const btn = document.getElementById("sendEmailBtn");
+    const feedback = document.getElementById("email-feedback");
+    
+    if (!email) {
+        alert("Please enter a valid email address.");
+        return;
+    }
+    
+    // Disable button & show spinner
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i>';
+    feedback.className = "small mt-1 text-secondary";
+    feedback.innerText = "Transmitting report details...";
+    
+    // AJAX POST request
+    const formData = new FormData();
+    formData.append("email", email);
+    
+    fetch(`/email_report/${predictionId}`, {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+        
+        if (data.success) {
+            feedback.className = "small mt-1 text-success fw-semibold";
+            feedback.innerText = data.message;
+        } else {
+            feedback.className = "small mt-1 text-danger fw-semibold";
+            feedback.innerText = data.message || "Failed to transmit report.";
+        }
+    })
+    .catch(error => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+        feedback.className = "small mt-1 text-danger fw-semibold";
+        feedback.innerText = "Connection error. Failed to deliver email.";
+    });
+}
+</script>
+{% endblock %}

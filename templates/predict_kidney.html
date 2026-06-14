@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Nephrology Risk Assessment - MediPredict AI{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Header -->
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="bg-success text-white p-3 rounded-4 d-flex align-items-center justify-content-center" style="width: 55px; height: 55px;">
+                        <i class="fa-solid fa-hand-holding-medical fs-4 animate-pulse"></i>
+                    </div>
+                    <div>
+                        <h2 class="fw-bold mb-0">Nephrology (Kidney) Risk Assessment</h2>
+                        <p class="text-secondary mb-0">Input kidney filtration and blood biomarkers to check for Chronic Kidney Disease.</p>
+                    </div>
+                </div>
+
+                <!-- Form Card -->
+                <div class="card p-4 shadow-sm border-light rounded-4 bg-white">
+                    <form action="{{ url_for('predict_kidney') }}" method="POST" class="needs-validation" novalidate>
+                        <div class="row g-4">
+                            <!-- Blood Urea -->
+                            <div class="col-md-6">
+                                <label for="BloodUrea" class="form-label small fw-semibold">Blood Urea (mg/dL)</label>
+                                <input type="number" class="form-control" id="BloodUrea" name="BloodUrea" required min="5" max="250" step="any" placeholder="e.g. 40">
+                                <div class="form-text small">Amount of urea nitrogen in the blood. Standard range: 7 - 20 mg/dL.</div>
+                                <div class="invalid-feedback">Please enter a valid Blood Urea value between 5 and 250.</div>
+                            </div>
+
+                            <!-- Serum Creatinine -->
+                            <div class="col-md-6">
+                                <label for="SerumCreatinine" class="form-label small fw-semibold">Serum Creatinine (mg/dL)</label>
+                                <input type="number" class="form-control" id="SerumCreatinine" name="SerumCreatinine" required min="0.2" max="15.0" step="0.01" placeholder="e.g. 1.1">
+                                <div class="form-text small">Kidney function biomarker. Standard range: 0.6 - 1.3 mg/dL.</div>
+                                <div class="invalid-feedback">Please enter a valid Serum Creatinine value between 0.2 and 15.0.</div>
+                            </div>
+
+                            <!-- Hemoglobin -->
+                            <div class="col-md-6">
+                                <label for="Hemoglobin" class="form-label small fw-semibold">Hemoglobin (g/dL)</label>
+                                <input type="number" class="form-control" id="Hemoglobin" name="Hemoglobin" required min="5" max="20" step="0.1" placeholder="e.g. 14.2">
+                                <div class="form-text small">Oxygen carrying protein in blood. Standard range: 12 - 17.5 g/dL.</div>
+                                <div class="invalid-feedback">Please enter a valid Hemoglobin between 5 and 20.</div>
+                            </div>
+
+                            <!-- Blood Pressure -->
+                            <div class="col-md-6">
+                                <label for="BloodPressure" class="form-label small fw-semibold">Diastolic Blood Pressure (mmHg)</label>
+                                <input type="number" class="form-control" id="BloodPressure" name="BloodPressure" required min="50" max="140" step="any" placeholder="e.g. 80">
+                                <div class="form-text small">Systemic arterial diastolic pressure. Standard: 60 - 90 mmHg.</div>
+                                <div class="invalid-feedback">Please enter a valid Blood Pressure between 50 and 140.</div>
+                            </div>
+
+                            <!-- Model Selector -->
+                            <div class="col-md-6">
+                                <label for="model_used" class="form-label small fw-semibold">Machine Learning Model</label>
+                                <select class="form-select" id="model_used" name="model_used">
+                                    <option value="Random Forest" selected>Random Forest Classifier (Ensemble Trees)</option>
+                                    <option value="Logistic Regression">Logistic Regression Classifier (Linear Probability)</option>
+                                </select>
+                                <div class="form-text small">Select the classifier engine. Accuracy comparison is available in results.</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 justify-content-end mt-5 border-top pt-4">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                            <button type="submit" class="btn btn-success rounded-pill px-5 text-white">
+                                Run Prediction <i class="fa-solid fa-wand-magic-sparkles ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

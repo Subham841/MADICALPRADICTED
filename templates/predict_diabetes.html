@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Diabetes Risk Assessment - MediPredict AI{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Header -->
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="bg-primary text-white p-3 rounded-4 d-flex align-items-center justify-content-center" style="width: 55px; height: 55px;">
+                        <i class="fa-solid fa-droplet fs-4 animate-pulse"></i>
+                    </div>
+                    <div>
+                        <h2 class="fw-bold mb-0">Diabetes Risk Assessment</h2>
+                        <p class="text-secondary mb-0">Input patient biomarkers to compute risk indices using machine learning.</p>
+                    </div>
+                </div>
+
+                <!-- Form Card -->
+                <div class="card p-4 shadow-sm border-light rounded-4 bg-white">
+                    <form action="{{ url_for('predict_diabetes') }}" method="POST" class="needs-validation" novalidate>
+                        <div class="row g-4">
+                            <!-- Glucose -->
+                            <div class="col-md-6">
+                                <label for="Glucose" class="form-label small fw-semibold">Plasma Glucose (mg/dL)</label>
+                                <input type="number" class="form-control" id="Glucose" name="Glucose" required min="40" max="250" step="any" placeholder="e.g. 120">
+                                <div class="form-text small">Plasma glucose concentration 2 hours in an oral glucose tolerance test. Standard: 70 - 140 mg/dL.</div>
+                                <div class="invalid-feedback">Please enter a valid glucose value between 40 and 250.</div>
+                            </div>
+
+                            <!-- Blood Pressure -->
+                            <div class="col-md-6">
+                                <label for="BloodPressure" class="form-label small fw-semibold">Diastolic Blood Pressure (mmHg)</label>
+                                <input type="number" class="form-control" id="BloodPressure" name="BloodPressure" required min="40" max="140" step="any" placeholder="e.g. 80">
+                                <div class="form-text small">Diastolic blood pressure. Standard range: 60 - 90 mmHg.</div>
+                                <div class="invalid-feedback">Please enter a valid pressure between 40 and 140.</div>
+                            </div>
+
+                            <!-- BMI -->
+                            <div class="col-md-6">
+                                <label for="BMI" class="form-label small fw-semibold">Body Mass Index (BMI)</label>
+                                <input type="number" class="form-control" id="BMI" name="BMI" required min="10" max="60" step="0.1" placeholder="e.g. 26.5">
+                                <div class="form-text small">Body mass index (weight in kg / (height in m)²). Standard: 18.5 - 24.9.</div>
+                                <div class="invalid-feedback">Please enter a valid BMI between 10 and 60.</div>
+                            </div>
+
+                            <!-- Insulin -->
+                            <div class="col-md-6">
+                                <label for="Insulin" class="form-label small fw-semibold">2-Hour Serum Insulin (mu U/ml)</label>
+                                <input type="number" class="form-control" id="Insulin" name="Insulin" required min="10" max="650" step="any" placeholder="e.g. 80">
+                                <div class="form-text small">2-Hour serum insulin test concentration. Standard: 16 - 166 mu U/ml.</div>
+                                <div class="invalid-feedback">Please enter a valid insulin value between 10 and 650.</div>
+                            </div>
+
+                            <!-- Age -->
+                            <div class="col-md-6">
+                                <label for="Age" class="form-label small fw-semibold">Age (years)</label>
+                                <input type="number" class="form-control" id="Age" name="Age" required min="18" max="110" step="1" placeholder="e.g. 45">
+                                <div class="form-text small">Patient age in years. Models are trained on adult cohorts (18+).</div>
+                                <div class="invalid-feedback">Please enter a valid age between 18 and 110.</div>
+                            </div>
+
+                            <!-- Model Selector -->
+                            <div class="col-md-6">
+                                <label for="model_used" class="form-label small fw-semibold">Machine Learning Model</label>
+                                <select class="form-select" id="model_used" name="model_used">
+                                    <option value="Random Forest" selected>Random Forest Classifier (Ensemble Trees)</option>
+                                    <option value="Logistic Regression">Logistic Regression Classifier (Linear Probability)</option>
+                                </select>
+                                <div class="form-text small">Select the classifier engine. Accuracy comparison is available in results.</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 justify-content-end mt-5 border-top pt-4">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 text-white">
+                                Run Prediction <i class="fa-solid fa-wand-magic-sparkles ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

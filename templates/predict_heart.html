@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Cardiology Risk Assessment - MediPredict AI{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Header -->
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="bg-danger text-white p-3 rounded-4 d-flex align-items-center justify-content-center" style="width: 55px; height: 55px;">
+                        <i class="fa-solid fa-heart-pulse fs-4 animate-pulse"></i>
+                    </div>
+                    <div>
+                        <h2 class="fw-bold mb-0">Cardiology Risk Assessment</h2>
+                        <p class="text-secondary mb-0">Input cardiovascular parameters to calculate clinical heart disease probability.</p>
+                    </div>
+                </div>
+
+                <!-- Form Card -->
+                <div class="card p-4 shadow-sm border-light rounded-4 bg-white">
+                    <form action="{{ url_for('predict_heart') }}" method="POST" class="needs-validation" novalidate>
+                        <div class="row g-4">
+                            <!-- Age -->
+                            <div class="col-md-6">
+                                <label for="Age" class="form-label small fw-semibold">Patient Age (years)</label>
+                                <input type="number" class="form-control" id="Age" name="Age" required min="20" max="95" step="1" placeholder="e.g. 52">
+                                <div class="form-text small">Age of patient in years. Standard risk escalates with age.</div>
+                                <div class="invalid-feedback">Please enter a valid age between 20 and 95.</div>
+                            </div>
+
+                            <!-- Gender -->
+                            <div class="col-md-6">
+                                <label for="Gender" class="form-label small fw-semibold">Gender</label>
+                                <select class="form-select" id="Gender" name="Gender" required>
+                                    <option value="" disabled selected>Select gender</option>
+                                    <option value="1">Male</option>
+                                    <option value="0">Female</option>
+                                </select>
+                                <div class="form-text small">Biological sex. Statistics show males correlate with higher early risk.</div>
+                                <div class="invalid-feedback">Please select biological sex.</div>
+                            </div>
+
+                            <!-- Cholesterol -->
+                            <div class="col-md-6">
+                                <label for="Cholesterol" class="form-label small fw-semibold">Serum Cholesterol (mg/dL)</label>
+                                <input type="number" class="form-control" id="Cholesterol" name="Cholesterol" required min="100" max="500" step="any" placeholder="e.g. 220">
+                                <div class="form-text small">Total serum cholesterol. Standard: Under 200 mg/dL is desirable.</div>
+                                <div class="invalid-feedback">Please enter a valid cholesterol between 100 and 500.</div>
+                            </div>
+
+                            <!-- Resting Blood Pressure -->
+                            <div class="col-md-6">
+                                <label for="RestingBP" class="form-label small fw-semibold">Resting Systolic Blood Pressure (mmHg)</label>
+                                <input type="number" class="form-control" id="RestingBP" name="RestingBP" required min="80" max="220" step="any" placeholder="e.g. 130">
+                                <div class="form-text small">Resting blood pressure measured on admission. Standard: Under 120 mmHg.</div>
+                                <div class="invalid-feedback">Please enter a valid blood pressure between 80 and 220.</div>
+                            </div>
+
+                            <!-- Max Heart Rate -->
+                            <div class="col-md-6">
+                                <label for="MaxHR" class="form-label small fw-semibold">Maximum Heart Rate (bpm)</label>
+                                <input type="number" class="form-control" id="MaxHR" name="MaxHR" required min="60" max="220" step="any" placeholder="e.g. 155">
+                                <div class="form-text small">Maximum heart rate achieved during stress testing. Standard: 220 minus age.</div>
+                                <div class="invalid-feedback">Please enter a valid heart rate between 60 and 220.</div>
+                            </div>
+
+                            <!-- Model Selector -->
+                            <div class="col-md-6">
+                                <label for="model_used" class="form-label small fw-semibold">Machine Learning Model</label>
+                                <select class="form-select" id="model_used" name="model_used">
+                                    <option value="Random Forest" selected>Random Forest Classifier (Ensemble Trees)</option>
+                                    <option value="Logistic Regression">Logistic Regression Classifier (Linear Probability)</option>
+                                </select>
+                                <div class="form-text small">Select the classifier engine. Accuracy comparison is available in results.</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 justify-content-end mt-5 border-top pt-4">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                            <button type="submit" class="btn btn-danger rounded-pill px-5 text-white">
+                                Run Prediction <i class="fa-solid fa-wand-magic-sparkles ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

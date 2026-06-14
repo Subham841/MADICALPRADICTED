@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}About Us - MediPredict AI{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <!-- Breadcrumb / Header -->
+        <div class="text-center mb-5">
+            <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">Learn More</span>
+            <h1 class="fw-bold">About MediPredict AI</h1>
+            <p class="text-secondary max-width-600 mx-auto">Discover the technology, research-backing, and algorithms driving our risk prediction models.</p>
+        </div>
+
+        <!-- Vision and Mission -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="card h-100 p-4 border-light shadow-sm">
+                    <div class="icon-box bg-primary-subtle text-primary mb-3">
+                        <i class="fa-solid fa-eye fs-4"></i>
+                    </div>
+                    <h4 class="fw-bold">Our Vision</h4>
+                    <p class="text-secondary mb-0">
+                        To build a highly accessible, rapid, and precise preliminary health screening layer that flags potential chronic health conditions, enabling patients to seek professional diagnostics and intervention early.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 p-4 border-light shadow-sm">
+                    <div class="icon-box bg-success-subtle text-success mb-3">
+                        <i class="fa-solid fa-bullseye fs-4"></i>
+                    </div>
+                    <h4 class="fw-bold">Our Mission</h4>
+                    <p class="text-secondary mb-0">
+                        To demystify clinical indicators. By giving patients an understanding of how parameters like blood glucose, cholesterol, and serum creatinine relate to disease progression, we bridge the gap between complex biochemistry and personal health awareness.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Methodology and Technology -->
+        <div class="card border-0 bg-light-subtle p-5 rounded-4 mb-5">
+            <h3 class="fw-bold mb-4 text-center">Under the Hood: Machine Learning Pipeline</h3>
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-6">
+                    <p class="text-secondary">
+                        MediPredict AI integrates two prominent machine learning methodologies to compute its assessments:
+                    </p>
+                    <div class="mb-3">
+                        <h6 class="fw-bold text-primary"><i class="fa-solid fa-calculator me-2"></i>Logistic Regression</h6>
+                        <p class="text-secondary small">A parametric classification algorithm that models the probability of a binary outcome using a logistic sigmoid function. Highly interpretable, it establishes clear feature importance weights.</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="fw-bold text-success"><i class="fa-solid fa-tree me-2"></i>Random Forest Classifier</h6>
+                        <p class="text-secondary small">An ensemble learning method consisting of numerous decision trees. By averaging predictions across trees, it handles non-linear relationships and interactions with high robustness, avoiding overfitting.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card p-4 border-light shadow-sm bg-white">
+                        <h6 class="fw-bold mb-3">Typical Data Processing Pipeline</h6>
+                        <ol class="small text-secondary ps-3 mb-0">
+                            <li class="mb-2"><strong>Data Standardisation:</strong> Raw user inputs are scaled using `StandardScaler` to have zero mean and unit variance, matching the distribution of model training cohorts.</li>
+                            <li class="mb-2"><strong>Model Training:</strong> Classifiers are optimized using 80/20 train/test splits, recording precision, recall, and ROC AUC metrics.</li>
+                            <li class="mb-2"><strong>Probability Calibration:</strong> `predict_proba()` produces the exact risk score, mapping features to a percentage risk.</li>
+                            <li class="mb-2"><strong>Dual Verification:</strong> The alternative model is evaluated simultaneously to highlight any differences in classification confidence.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="max-width-800 mx-auto">
+            <h3 class="fw-bold mb-4 text-center">Frequently Asked Questions</h3>
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item border-light shadow-sm mb-3 rounded overflow-hidden">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Can I use this for official medical diagnosis?
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-secondary small">
+                            No. This application is designed as an educational and screening support tool. While it uses validated machine learning pipelines trained on standard epidemiological datasets, it does not account for the comprehensive medical history that a doctor reviews. In case of high-risk results, please consult a registered medical professional.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item border-light shadow-sm mb-3 rounded overflow-hidden">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            Where did the model training data originate?
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-secondary small">
+                            Our models are designed after standard clinical cohorts including the Pima Indians Diabetes Dataset, the Cleveland Cardiology Dataset, and Chronic Kidney Disease registry profiles. The distributions and correlations in the training pipeline simulate these public domains to ensure physiological validity.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item border-light shadow-sm mb-3 rounded overflow-hidden">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            How secure is my health screening history?
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-secondary small">
+                            All user details are encrypted at rest using secure password hashing, and active sessions utilize cryptographically signed session tokens. History entries are linked directly to your authenticated user ID and are completely private.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

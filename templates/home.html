@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}MediPredict AI - Advanced Medical Risk Prediction{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section py-5 d-flex align-items-center">
+    <div class="container py-lg-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill mb-3 fw-semibold">
+                    <i class="fa-solid fa-microchip me-1"></i> Powered by Clinical Machine Learning
+                </div>
+                <h1 class="display-4 fw-extrabold mb-3 tracking-tight">
+                    Predict Health Risks with <span class="text-gradient">Clinical Precision</span>
+                </h1>
+                <p class="lead text-secondary mb-4">
+                    MediPredict AI leverages state-of-the-art Random Forest and Logistic Regression models to predict risk parameters for Diabetes, Heart Disease, Kidney Disease, and Liver Disease in seconds.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg rounded-pill px-4 shadow">
+                            <i class="fa-solid fa-square-poll-horizontal me-2"></i>Go to Dashboard
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg rounded-pill px-4 shadow">
+                            <i class="fa-solid fa-user-plus me-2"></i>Create Account
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                            <i class="fa-solid fa-sign-in-alt me-2"></i>Sign In
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <!-- Trust Stats -->
+                <div class="row mt-5 pt-3 border-top border-light-subtle g-3">
+                    <div class="col-4">
+                        <h4 class="fw-bold mb-0 text-primary">96%+</h4>
+                        <small class="text-secondary">Model Accuracy</small>
+                    </div>
+                    <div class="col-4">
+                        <h4 class="fw-bold mb-0 text-primary">4</h4>
+                        <small class="text-secondary">Diseases Covered</small>
+                    </div>
+                    <div class="col-4">
+                        <h4 class="fw-bold mb-0 text-primary">&lt; 1s</h4>
+                        <small class="text-secondary">Inference Speed</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="hero-image-wrapper text-center position-relative">
+                    <div class="blob-bg-1"></div>
+                    <div class="blob-bg-2"></div>
+                    <div class="card glass-card p-4 shadow-lg border-light mx-auto position-relative z-1" style="max-width: 480px;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="bg-primary text-white p-2 rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                                    <i class="fa-solid fa-stethoscope"></i>
+                                </div>
+                                <div class="text-start">
+                                    <h6 class="fw-bold mb-0">MediPredict Engine</h6>
+                                    <small class="text-secondary">Status: Online</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-success-subtle text-success border border-success rounded-pill px-2.5 py-1">Active</span>
+                        </div>
+                        
+                        <div class="text-start mb-3">
+                            <label class="small text-secondary mb-1">Diabetes Risk Index</label>
+                            <div class="progress rounded-pill mb-1" style="height: 10px;">
+                                <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" style="width: 68%;"></div>
+                            </div>
+                            <div class="d-flex justify-content-between small">
+                                <span class="text-warning fw-semibold">Moderate Risk</span>
+                                <span>68.4%</span>
+                            </div>
+                        </div>
+
+                        <div class="text-start mb-3">
+                            <label class="small text-secondary mb-1">Cardiovascular Risk Index</label>
+                            <div class="progress rounded-pill mb-1" style="height: 10px;">
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: 89%;"></div>
+                            </div>
+                            <div class="d-flex justify-content-between small">
+                                <span class="text-danger fw-semibold">High Risk</span>
+                                <span>89.2%</span>
+                            </div>
+                        </div>
+
+                        <div class="text-start mb-2">
+                            <label class="small text-secondary mb-1">Renal (Kidney) Risk Index</label>
+                            <div class="progress rounded-pill mb-1" style="height: 10px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 12%;"></div>
+                            </div>
+                            <div class="d-flex justify-content-between small">
+                                <span class="text-success fw-semibold">Low Risk</span>
+                                <span>12.1%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features / Disease Cards -->
+<section class="py-5 bg-light-subtle">
+    <div class="container py-lg-4">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Intelligent Risk Screenings</h2>
+            <p class="text-secondary max-width-600 mx-auto">Select a diagnostic screening module below to compute risk probabilities using standard physiological measurements.</p>
+        </div>
+        
+        <div class="row g-3 justify-content-center">
+            <!-- Diabetes Module -->
+            <div class="col-xl-3 col-lg-6 col-md-6">
+                <div class="card h-100 hover-card border-light shadow-sm p-3 transition-all">
+                    <div class="icon-box bg-primary-subtle text-primary mb-3">
+                        <i class="fa-solid fa-droplet fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Diabetes Assessment</h5>
+                    <p class="text-secondary small mb-3">
+                        Computes probability indices of diabetes mellitus based on Glucose, Blood Pressure, BMI, Insulin, and Age.
+                    </p>
+                    <ul class="list-unstyled small text-secondary mb-4">
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i>Glucose Screening</li>
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i>BMI Correlation</li>
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i>Insulin Factor</li>
+                    </ul>
+                    <div class="mt-auto">
+                        <a href="{% if current_user.is_authenticated %}{{ url_for('predict_diabetes') }}{% else %}{{ url_for('login') }}{% endif %}" class="btn btn-outline-primary btn-sm rounded-pill w-100 py-2">
+                            Begin Screening <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heart Disease Module -->
+            <div class="col-xl-3 col-lg-6 col-md-6">
+                <div class="card h-100 hover-card border-light shadow-sm p-3 transition-all">
+                    <div class="icon-box bg-danger-subtle text-danger mb-3">
+                        <i class="fa-solid fa-heart-pulse fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Cardiology Assessment</h5>
+                    <p class="text-secondary small mb-3">
+                        Calculates coronary heart disease risks using Age, Gender, Cholesterol levels, Blood Pressure, and Max Heart Rates.
+                    </p>
+                    <ul class="list-unstyled small text-secondary mb-4">
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i>Cholesterol Scan</li>
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i>Pressure Metric</li>
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i>Heart Rate Check</li>
+                    </ul>
+                    <div class="mt-auto">
+                        <a href="{% if current_user.is_authenticated %}{{ url_for('predict_heart') }}{% else %}{{ url_for('login') }}{% endif %}" class="btn btn-outline-danger btn-sm rounded-pill w-100 py-2">
+                            Begin Screening <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kidney Disease Module -->
+            <div class="col-xl-3 col-lg-6 col-md-6">
+                <div class="card h-100 hover-card border-light shadow-sm p-3 transition-all">
+                    <div class="icon-box bg-success-subtle text-success mb-3">
+                        <i class="fa-solid fa-hand-holding-medical fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Renal Assessment</h5>
+                    <p class="text-secondary small mb-3">
+                        Evaluates probability indicators of chronic kidney disease (CKD) using Blood Urea, Serum Creatinine, Hemoglobin, and Blood Pressure.
+                    </p>
+                    <ul class="list-unstyled small text-secondary mb-4">
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i>Creatinine Clearance</li>
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i>Hemoglobin Density</li>
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i>Blood Urea Nitrogen</li>
+                    </ul>
+                    <div class="mt-auto">
+                        <a href="{% if current_user.is_authenticated %}{{ url_for('predict_kidney') }}{% else %}{{ url_for('login') }}{% endif %}" class="btn btn-outline-success btn-sm rounded-pill w-100 py-2">
+                            Begin Screening <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liver Disease Module -->
+            <div class="col-xl-3 col-lg-6 col-md-6">
+                <div class="card h-100 hover-card border-light shadow-sm p-3 transition-all">
+                    <div class="icon-box bg-info-subtle text-info mb-3">
+                        <i class="fa-solid fa-stethoscope fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Liver Assessment</h5>
+                    <p class="text-secondary small mb-3">
+                        Calculates hepatic risk thresholds using Serum Bilirubin, Albumin protein, Alkaline Phosphatase (ALP), SGOT/AST, and Age.
+                    </p>
+                    <ul class="list-unstyled small text-secondary mb-4">
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i>Bilirubin Clearance</li>
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i>Albumin Levels</li>
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i>SGOT/AST Enzymes</li>
+                    </ul>
+                    <div class="mt-auto">
+                        <a href="{% if current_user.is_authenticated %}{{ url_for('predict_liver') }}{% else %}{{ url_for('login') }}{% endif %}" class="btn btn-outline-info btn-sm rounded-pill w-100 py-2 text-info hover-white">
+                            Begin Screening <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Informational Section -->
+<section class="py-5">
+    <div class="container py-lg-4">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6 order-2 order-lg-1">
+                <div class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">Workflow</div>
+                <h3 class="fw-bold mb-3">How MediPredict AI Works</h3>
+                
+                <div class="d-flex gap-3 mb-4">
+                    <div class="number-circle bg-primary text-white">1</div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Enter Clinical Vitals</h6>
+                        <p class="text-secondary small mb-0">Input standard biomarkers like glucose levels, blood pressure, cholesterol, serum creatinine, or bilirubin values.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="number-circle bg-primary text-white">2</div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Dual Model Pipeline Comparison</h6>
+                        <p class="text-secondary small mb-0">Our pipeline computes results using two standard algorithms: Random Forest and Logistic Regression.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="number-circle bg-primary text-white">3</div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Clinical Reports Generation</h6>
+                        <p class="text-secondary small mb-0">Retrieve immediate risk percentage, view targeted medical advice, download a detailed PDF report, or email it to your doctor.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6 order-1 order-lg-2">
+                <div class="card border-0 bg-primary-subtle p-5 rounded-4 position-relative overflow-hidden">
+                    <div class="position-absolute" style="right: -20px; bottom: -20px; font-size: 150px; opacity: 0.05; color: var(--bs-primary)">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+                    <h4 class="fw-bold text-primary mb-3">Empowering Patients and Clinicians</h4>
+                    <p class="mb-4 text-secondary leading-relaxed">
+                        Early detection is the single most effective tool against chronic diseases. By utilizing historical patient data and advanced classification trees, our platform aims to raise awareness of early symptoms so proactive actions can be taken.
+                    </p>
+                    <a href="{{ url_for('about') }}" class="btn btn-primary rounded-pill px-4 text-white">Read Our Mission</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

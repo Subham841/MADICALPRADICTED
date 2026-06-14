@@ -1,0 +1,177 @@
+/* MediPredict AI - Design Aesthetics System */
+
+:root {
+    --primary-color: #0d6efd;
+    --primary-gradient: linear-gradient(135deg, #0d6efd 0%, #00d2ff 100%);
+    --danger-gradient: linear-gradient(135deg, #dc3545 0%, #ff758c 100%);
+    --success-gradient: linear-gradient(135deg, #198754 0%, #20c997 100%);
+    --transition-speed: 0.3s;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Base Adjustments */
+body {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-family: 'Inter', sans-serif;
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+}
+
+/* Premium Typography styling */
+.tracking-tight {
+    letter-spacing: -0.025em;
+}
+.fw-extrabold {
+    font-weight: 800;
+}
+.text-gradient {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Glassmorphism & Hover Cards */
+.glass-card {
+    background: var(--bs-body-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    transition: transform var(--transition-speed) cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow var(--transition-speed) ease;
+}
+
+.hover-card {
+    transition: transform var(--transition-speed) cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow var(--transition-speed) ease;
+}
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Custom Icon Boxes */
+.icon-box {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+.number-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* Pulse Micro-Animation */
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.4);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(13, 110, 253, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+    }
+}
+.animate-pulse {
+    animation: pulse 2s infinite;
+}
+
+/* SVG Gauge Ring for Risk Results */
+.risk-circle-wrapper {
+    position: relative;
+    width: 180px;
+    height: 180px;
+}
+.risk-svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+}
+.risk-bg {
+    fill: none;
+    stroke: var(--bs-secondary-bg);
+    stroke-width: 8;
+}
+.risk-progress {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s ease-in-out;
+}
+.progress-danger {
+    stroke: #dc3545;
+}
+.progress-success {
+    stroke: #198754;
+}
+.risk-circle-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+/* Max Width Helpers */
+.max-width-600 {
+    max-width: 600px;
+}
+.max-width-800 {
+    max-width: 800px;
+}
+
+/* Transition Utilities */
+.transition-all {
+    transition: all var(--transition-speed) ease;
+}
+
+/* Dark/Light custom variables compatibility overrides */
+[data-bs-theme="dark"] .card {
+    background-color: #1e293b;
+    border-color: #334155;
+}
+[data-bs-theme="dark"] .table-light {
+    --bs-table-bg: #334155;
+    --bs-table-color: #f8fafc;
+}
+[data-bs-theme="dark"] .bg-light {
+    background-color: #334155 !important;
+}
+[data-bs-theme="dark"] .border-light-subtle {
+    border-color: #334155 !important;
+}
+[data-bs-theme="dark"] .list-group-item {
+    background-color: #1e293b;
+    border-color: #334155;
+    color: #f8fafc;
+}
+[data-bs-theme="dark"] input.form-control, 
+[data-bs-theme="dark"] select.form-select {
+    background-color: #0f172a;
+    border-color: #334155;
+    color: #f8fafc;
+}
+[data-bs-theme="dark"] input.form-control:focus, 
+[data-bs-theme="dark"] select.form-select:focus {
+    background-color: #0f172a;
+    border-color: #0d6efd;
+    color: #f8fafc;
+}
+[data-bs-theme="dark"] .modal-content {
+    background-color: #1e293b;
+    color: #f8fafc;
+}
+[data-bs-theme="dark"] .text-dark {
+    color: #f8fafc !important;
+}

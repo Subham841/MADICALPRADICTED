@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MediPredict AI - Professional Risk Assessment{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top shadow-sm py-3 transition-all">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
+                <i class="fa-solid fa-heart-pulse text-primary fs-3 me-2 animate-pulse"></i>
+                <span class="fw-bold tracking-tight">MediPredict<span class="text-primary">AI</span></span>
+            </a>
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active fw-semibold{% endif %}" href="{{ url_for('home') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/services' %}active fw-semibold{% endif %}" href="{{ url_for('services') }}">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/about' %}active fw-semibold{% endif %}" href="{{ url_for('about') }}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/contact' %}active fw-semibold{% endif %}" href="{{ url_for('contact') }}">Contact</a>
+                    </li>
+                    
+                    <!-- Authentication State -->
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.role == 'admin' %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == '/admin' %}active fw-semibold{% endif %}" href="{{ url_for('admin') }}">
+                                    <i class="fa-solid fa-user-shield me-1"></i>Admin Panel
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == '/dashboard' %}active fw-semibold{% endif %}" href="{{ url_for('dashboard') }}">
+                                    <i class="fa-solid fa-chart-line me-1"></i>Dashboard
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item ms-lg-3">
+                            <span class="navbar-text me-2 d-none d-lg-inline-block">
+                                Hello, <strong>{{ current_user.username.capitalize() }}</strong>
+                            </span>
+                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3" href="{{ url_for('logout') }}">
+                                <i class="fa-solid fa-sign-out-alt me-1"></i>Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item ms-lg-3">
+                            <a class="btn btn-outline-primary btn-sm rounded-pill px-3 me-2" href="{{ url_for('login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary btn-sm rounded-pill px-3 text-white" href="{{ url_for('register') }}">Register</a>
+                        </li>
+                    {% endif %}
+                    
+                    <!-- Theme Toggle -->
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <button class="btn btn-link nav-link p-2" id="theme-toggle" aria-label="Toggle Dark Mode">
+                            <i class="fa-solid fa-moon fs-5 text-secondary" id="theme-toggle-icon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container my-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center" role="alert">
+                        {% if category == 'success' %}
+                            <i class="fa-solid fa-circle-check text-success fs-4 me-3"></i>
+                        {% elif category == 'danger' %}
+                            <i class="fa-solid fa-circle-exclamation text-danger fs-4 me-3"></i>
+                        {% else %}
+                            <i class="fa-solid fa-circle-info text-warning fs-4 me-3"></i>
+                        {% endif %}
+                        <div>{{ message }}</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="min-vh-100">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark text-light border-top border-secondary mt-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fa-solid fa-heart-pulse text-primary fs-3 me-2"></i>
+                        <span class="fw-bold tracking-tight text-white fs-4">MediPredict AI</span>
+                    </div>
+                    <p class="text-secondary small">
+                        Providing clinical intelligence and screening risk assessments using advanced Machine Learning technology. Empowering patients and clinicians globally.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-secondary hover-primary"><i class="fa-brands fa-facebook fs-5"></i></a>
+                        <a href="#" class="text-secondary hover-primary"><i class="fa-brands fa-twitter fs-5"></i></a>
+                        <a href="#" class="text-secondary hover-primary"><i class="fa-brands fa-linkedin fs-5"></i></a>
+                        <a href="#" class="text-secondary hover-primary"><i class="fa-brands fa-github fs-5"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 col-6">
+                    <h6 class="fw-bold text-white mb-3">Services</h6>
+                    <ul class="list-unstyled small text-secondary">
+                        <li class="mb-2"><a href="{{ url_for('services') }}" class="text-decoration-none text-secondary hover-white">Diabetes Prediction</a></li>
+                        <li class="mb-2"><a href="{{ url_for('services') }}" class="text-decoration-none text-secondary hover-white">Cardiology Risk Scan</a></li>
+                        <li class="mb-2"><a href="{{ url_for('services') }}" class="text-decoration-none text-secondary hover-white">Renal Health Scan</a></li>
+                        <li class="mb-2"><a href="{{ url_for('services') }}" class="text-decoration-none text-secondary hover-white">Model Comparison</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 col-6">
+                    <h6 class="fw-bold text-white mb-3">Company</h6>
+                    <ul class="list-unstyled small text-secondary">
+                        <li class="mb-2"><a href="{{ url_for('about') }}" class="text-decoration-none text-secondary hover-white">About Us</a></li>
+                        <li class="mb-2"><a href="{{ url_for('contact') }}" class="text-decoration-none text-secondary hover-white">Contact Support</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-secondary hover-white">Privacy Policy</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-secondary hover-white">Terms of Use</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <h6 class="fw-bold text-white mb-3">Clinical Advisory Notice</h6>
+                    <p class="text-secondary small">
+                        MediPredict AI predictions are based on research-group statistics and machine learning heuristics. This is not a formal substitute for clinical diagnosis. In case of high-risk outcomes, kindly seek professional consult from registered medical practitioners.
+                    </p>
+                </div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-secondary">
+                <p class="mb-0">&copy; 2026 MediPredict AI. All rights reserved.</p>
+                <p class="mb-0">Designed for Intelligent Clinical Diagnostics.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom Main JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>
