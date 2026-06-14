@@ -151,6 +151,41 @@ def generate_liver_data(n_samples=1000):
     })
     return df
 
+def generate_brain_data(n_samples=1000):
+    """
+    Generates synthetic brain disease (neurological anomalies) risk assessment data.
+    Features: HeadacheIntensity (0-10), CognitiveSymptoms (0/1), SensorimotorSymptoms (0/1), HistoryOfSeizures (0/1), Age
+    """
+    headache = np.random.normal(3.5, 2.5, n_samples)
+    cognitive = np.random.binomial(1, 0.25, n_samples)
+    sensorimotor = np.random.binomial(1, 0.20, n_samples)
+    seizures = np.random.binomial(1, 0.08, n_samples)
+    age = np.random.normal(48, 16, n_samples)
+    
+    headache = np.clip(headache, 0, 10)
+    age = np.clip(age, 18, 90).astype(int)
+    
+    h_score = (headache - 3.0) / 2.5
+    cog_score = cognitive * 0.8
+    sens_score = sensorimotor * 0.7
+    seiz_score = seizures * 1.2
+    age_score = (age - 45) / 15
+    
+    risk_score = 0.2 * h_score + 0.45 * cog_score + 0.4 * sens_score + 0.6 * seiz_score + 0.15 * age_score
+    prob = 1 / (1 + np.exp(-risk_score))
+    
+    outcome = (prob > 0.5).astype(int)
+    
+    df = pd.DataFrame({
+        'HeadacheIntensity': headache,
+        'CognitiveSymptoms': cognitive,
+        'SensorimotorSymptoms': sensorimotor,
+        'HistoryOfSeizures': seizures,
+        'Age': age,
+        'Outcome': outcome
+    })
+    return df
+
 def train_and_evaluate(df, disease_name):
     print(f"\n--- Training Models for {disease_name} ---")
     X = df.iloc[:, :-1]
@@ -222,12 +257,17 @@ def main():
     df_liver = generate_liver_data()
     liver_metrics = train_and_evaluate(df_liver, 'Liver Disease')
     
+    # 5. Brain Disease
+    df_brain = generate_brain_data()
+    brain_metrics = train_and_evaluate(df_brain, 'Brain Disease')
+    
     # Package all metrics together
     all_metrics = {
         'Diabetes': diabetes_metrics,
         'Heart Disease': heart_metrics,
         'Kidney Disease': kidney_metrics,
-        'Liver Disease': liver_metrics
+        'Liver Disease': liver_metrics,
+        'Brain Disease': brain_metrics
     }
     
     # Save metrics to JSON

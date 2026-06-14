@@ -195,9 +195,9 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Group performance data
-            const diseases = ['Diabetes', 'Heart Disease', 'Kidney Disease'];
-            const rfAccuracies = [0, 0, 0];
-            const lrAccuracies = [0, 0, 0];
+            const diseases = ['Diabetes', 'Heart Disease', 'Kidney Disease', 'Liver Disease', 'Brain Disease'];
+            const rfAccuracies = [0, 0, 0, 0, 0];
+            const lrAccuracies = [0, 0, 0, 0, 0];
             
             {% for p in performances %}
                 var dIndex = diseases.indexOf("{{ p.disease_type }}");

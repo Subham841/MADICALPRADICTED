@@ -142,6 +142,39 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Brain Disease Assessment -->
+            <div class="col-12">
+                <div class="card border-0 shadow-sm p-4 bg-light-subtle rounded-4">
+                    <div class="row align-items-center g-4">
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <div class="bg-warning text-white p-2.5 rounded-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background: linear-gradient(135deg, #af40ff 0%, #5b2cbf 100%) !important;">
+                                    <i class="fa-solid fa-brain fs-5"></i>
+                                </div>
+                                <h3 class="fw-bold mb-0">Neurological (Brain Disease) Risk Screening</h3>
+                            </div>
+                            <p class="text-secondary">
+                                Neurological impairments such as stroke hazards, tumors, or progressive cell degeneration can impact central nervous system stability. Early symptom-based screening helps classify hazard thresholds before complex imaging is performed.
+                            </p>
+                            
+                            <h6 class="fw-bold text-dark mt-4">Indicators Analyzed:</h6>
+                            <div class="row g-2 text-secondary small">
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-warning me-2" style="color: #af40ff !important;"></i><strong>Headache Intensity:</strong> Pain threshold scale (0 to 10).</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-warning me-2" style="color: #af40ff !important;"></i><strong>Cognitive Changes:</strong> Memory loss, confusion, or speech adjustments.</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-warning me-2" style="color: #af40ff !important;"></i><strong>Sensorimotor Status:</strong> Numbness, motor weakness, balance, or vision concerns.</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-warning me-2" style="color: #af40ff !important;"></i><strong>Seizure History:</strong> Prior seizure events or epilepsy risk factors.</div>
+                                <div class="col-sm-6"><i class="fa-solid fa-angles-right text-warning me-2" style="color: #af40ff !important;"></i><strong>Age:</strong> General demographic neurological timeline factor.</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-center text-lg-end">
+                            <a href="{% if current_user.is_authenticated %}{{ url_for('predict_brain') }}{% else %}{{ url_for('login') }}{% endif %}" class="btn btn-warning rounded-pill px-4 py-2.5 shadow-sm text-white" style="background: linear-gradient(135deg, #af40ff 0%, #5b2cbf 100%) !important; border: none;">
+                                Start Neurological Scan <i class="fa-solid fa-arrow-pointer ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>

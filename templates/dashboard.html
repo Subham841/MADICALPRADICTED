@@ -25,6 +25,9 @@
                 <a href="{{ url_for('predict_liver') }}" class="btn btn-info btn-sm rounded-pill px-3 py-2 text-white">
                     <i class="fa-solid fa-stethoscope me-1"></i> Liver Test
                 </a>
+                <a href="{{ url_for('predict_brain') }}" class="btn btn-warning btn-sm rounded-pill px-3 py-2 text-white" style="background: linear-gradient(135deg, #af40ff 0%, #5b2cbf 100%) !important; border: none;">
+                    <i class="fa-solid fa-brain me-1"></i> Brain Test
+                </a>
             </div>
         </div>
 
@@ -132,6 +135,7 @@
                         <option value="Heart Disease" {% if request.args.get('disease') == 'Heart Disease' %}selected{% endif %}>Heart Disease</option>
                         <option value="Kidney Disease" {% if request.args.get('disease') == 'Kidney Disease' %}selected{% endif %}>Kidney Disease</option>
                         <option value="Liver Disease" {% if request.args.get('disease') == 'Liver Disease' %}selected{% endif %}>Liver Disease</option>
+                        <option value="Brain Disease" {% if request.args.get('disease') == 'Brain Disease' %}selected{% endif %}>Brain Disease</option>
                     </select>
                     
                     {% if request.args.get('search') or request.args.get('disease') %}
@@ -160,15 +164,17 @@
                                     <td class="text-secondary small">{{ p.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
-                                            {% if p.disease_type == 'Diabetes' %}
-                                                <i class="fa-solid fa-droplet text-primary"></i>
-                                            {% elif p.disease_type == 'Heart Disease' %}
-                                                <i class="fa-solid fa-heart-pulse text-danger"></i>
-                                            {% elif p.disease_type == 'Liver Disease' %}
-                                                <i class="fa-solid fa-stethoscope text-info"></i>
-                                            {% else %}
-                                                <i class="fa-solid fa-hand-holding-medical text-success"></i>
-                                            {% endif %}
+                                             {% if p.disease_type == 'Diabetes' %}
+                                                 <i class="fa-solid fa-droplet text-primary"></i>
+                                             {% elif p.disease_type == 'Heart Disease' %}
+                                                 <i class="fa-solid fa-heart-pulse text-danger"></i>
+                                             {% elif p.disease_type == 'Liver Disease' %}
+                                                 <i class="fa-solid fa-stethoscope text-info"></i>
+                                             {% elif p.disease_type == 'Kidney Disease' %}
+                                                 <i class="fa-solid fa-hand-holding-medical text-success"></i>
+                                             {% elif p.disease_type == 'Brain Disease' %}
+                                                 <i class="fa-solid fa-brain text-warning" style="color: #af40ff !important;"></i>
+                                             {% endif %}
                                             <strong>{{ p.disease_type }}</strong>
                                         </div>
                                     </td>
@@ -233,12 +239,14 @@
         let heartCount = 0;
         let kidneyCount = 0;
         let liverCount = 0;
+        let brainCount = 0;
         
         {% for p in history %}
             if ("{{ p.disease_type }}" === "Diabetes") diabetesCount++;
             if ("{{ p.disease_type }}" === "Heart Disease") heartCount++;
             if ("{{ p.disease_type }}" === "Kidney Disease") kidneyCount++;
             if ("{{ p.disease_type }}" === "Liver Disease") liverCount++;
+            if ("{{ p.disease_type }}" === "Brain Disease") brainCount++;
         {% endfor %}
 
         document.addEventListener("DOMContentLoaded", function () {
@@ -247,14 +255,15 @@
             new Chart(ctxSummary, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Diabetes', 'Heart Disease', 'Kidney Disease', 'Liver Disease'],
+                    labels: ['Diabetes', 'Heart Disease', 'Kidney Disease', 'Liver Disease', 'Brain Disease'],
                     datasets: [{
-                        data: [diabetesCount, heartCount, kidneyCount, liverCount],
+                        data: [diabetesCount, heartCount, kidneyCount, liverCount, brainCount],
                         backgroundColor: [
                             'rgba(13, 110, 253, 0.85)', // Blue
                             'rgba(220, 53, 69, 0.85)',  // Red
                             'rgba(25, 135, 84, 0.85)',  // Green
-                            'rgba(13, 202, 240, 0.85)'  // Cyan/Info
+                            'rgba(13, 202, 240, 0.85)', // Cyan/Info
+                            'rgba(175, 64, 255, 0.85)'  // Purple/Brain
                         ],
                         borderWidth: 2,
                         hoverOffset: 4

@@ -134,5 +134,39 @@
                 ]
             ]
         }
+    },
+    "Brain Disease": {
+        "Logistic Regression": {
+            "accuracy": 0.98,
+            "precision": 0.9738562091503268,
+            "recall": 1.0,
+            "f1_score": 0.9867549668874173,
+            "confusion_matrix": [
+                [
+                    47,
+                    4
+                ],
+                [
+                    0,
+                    149
+                ]
+            ]
+        },
+        "Random Forest": {
+            "accuracy": 0.98,
+            "precision": 0.9738562091503268,
+            "recall": 1.0,
+            "f1_score": 0.9867549668874173,
+            "confusion_matrix": [
+                [
+                    47,
+                    4
+                ],
+                [
+                    0,
+                    149
+                ]
+            ]
+        }
     }
 }

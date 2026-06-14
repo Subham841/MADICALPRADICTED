@@ -30,7 +30,7 @@ MODELS = {}
 SCALERS = {}
 
 def load_ml_resources():
-    diseases = ['diabetes', 'heart_disease', 'kidney_disease', 'liver_disease']
+    diseases = ['diabetes', 'heart_disease', 'kidney_disease', 'liver_disease', 'brain_disease']
     for disease in diseases:
         scaler_path = f'models/{disease}_scaler.pkl'
         rf_path = f'models/{disease}_rf.pkl'
@@ -57,7 +57,9 @@ def is_ml_trained():
         'models/diabetes_scaler.pkl', 'models/diabetes_rf.pkl',
         'models/heart_disease_scaler.pkl', 'models/heart_disease_rf.pkl',
         'models/kidney_disease_scaler.pkl', 'models/kidney_disease_rf.pkl',
-        'models/liver_disease_scaler.pkl', 'models/liver_disease_rf.pkl'
+        'models/liver_disease_scaler.pkl', 'models/liver_disease_rf.pkl',
+        'models/brain_disease_scaler.pkl', 'models/brain_disease_rf.pkl',
+        'models/brain_disease_lr.pkl'
     ]
     return all(os.path.exists(f) for f in required_files)
 
@@ -169,6 +171,29 @@ def get_recommendations(disease, result, data):
             recommendations.append("Maintain a balanced, nutrient-dense diet rich in green vegetables and antioxidants.")
             recommendations.append("Maintain a healthy weight to prevent Non-Alcoholic Fatty Liver Disease (NAFLD).")
             recommendations.append("Avoid excessive chemical exposure and unnecessary self-medication.")
+            
+    elif disease == 'Brain Disease':
+        headache = float(data.get('Headache Intensity', 0))
+        cog = float(data.get('Cognitive Symptoms', 0) if isinstance(data.get('Cognitive Symptoms'), (int, float)) else (1.0 if data.get('Cognitive Symptoms') == 'Yes' else 0.0))
+        sens = float(data.get('Sensorimotor Symptoms', 0) if isinstance(data.get('Sensorimotor Symptoms'), (int, float)) else (1.0 if data.get('Sensorimotor Symptoms') == 'Yes' else 0.0))
+        seiz = float(data.get('History of Seizures', 0) if isinstance(data.get('History of Seizures'), (int, float)) else (1.0 if data.get('History of Seizures') == 'Yes' else 0.0))
+        
+        if result == 'High Risk':
+            recommendations.append("Schedule an urgent consultation with a Neurologist for a comprehensive neurological examination.")
+            if headache > 6:
+                recommendations.append(f"Your reported headache intensity ({headache}/10) is severe. Avoid self-medication and obtain a clinical review.")
+            if cog == 1.0 or data.get('Cognitive Symptoms') == 'Yes':
+                recommendations.append("Cognitive changes (memory/speech) warrant brain imaging tests (such as MRI or CT scan) to rule out structural anomalies.")
+            if sens == 1.0 or data.get('Sensorimotor Symptoms') == 'Yes':
+                recommendations.append("Sensorimotor changes (numbness, weakness, vision changes) require prompt clinical assessment of reflexes and motor pathways.")
+            if seiz == 1.0 or data.get('History of Seizures') == 'Yes':
+                recommendations.append("Seizure history requires electroencephalogram (EEG) screening and specialized seizure control protocols.")
+            recommendations.append("Strictly monitor and control systemic vitals, especially blood pressure and glucose levels, which affect neurological health.")
+        else:
+            recommendations.append("Maintain routine physical and cognitive exercises (like puzzles, reading, active learning).")
+            recommendations.append("Adopt a diet rich in omega-3 fatty acids, antioxidants, and vitamins (e.g., MIND diet).")
+            recommendations.append("Ensure 7-8 hours of high-quality sleep daily to promote neurological recovery and glymphatic clearance.")
+            recommendations.append("Perform routine health checks including blood pressure and lipid panels.")
             
     return recommendations
 
@@ -507,6 +532,65 @@ def predict_liver():
             
     return render_template('predict_liver.html')
 
+@app.route('/predict/brain', methods=['GET', 'POST'])
+@login_required
+def predict_brain():
+    if not is_ml_trained():
+        flash("Machine Learning models are not trained yet.", "warning")
+        return redirect(url_for('dashboard'))
+        
+    if request.method == 'POST':
+        try:
+            headache = float(request.form.get('HeadacheIntensity', 0))
+            cognitive = float(request.form.get('CognitiveSymptoms', 0))
+            sensorimotor = float(request.form.get('SensorimotorSymptoms', 0))
+            seizures = float(request.form.get('HistoryOfSeizures', 0))
+            age = float(request.form.get('Age', 0))
+            model_type = request.form.get('model_used', 'Random Forest')
+            
+            cog_label = 'Yes' if cognitive == 1.0 else 'No'
+            sens_label = 'Yes' if sensorimotor == 1.0 else 'No'
+            seiz_label = 'Yes' if seizures == 1.0 else 'No'
+            
+            input_dict = {
+                'Headache Intensity': headache,
+                'Cognitive Symptoms': cog_label,
+                'Sensorimotor Symptoms': sens_label,
+                'History of Seizures': seiz_label,
+                'Age': age
+            }
+            
+            scaler = SCALERS.get('brain_disease')
+            features = [[headache, cognitive, sensorimotor, seizures, age]]
+            scaled_features = scaler.transform(features)
+            
+            model_key = 'brain_disease_rf' if model_type == 'Random Forest' else 'brain_disease_lr'
+            model = MODELS.get(model_key)
+            
+            prediction = model.predict(scaled_features)[0]
+            probability = model.predict_proba(scaled_features)[0][1] * 100
+            
+            result = 'High Risk' if prediction == 1 else 'Low Risk'
+            
+            history = PredictionHistory(
+                user_id=current_user.id,
+                disease_type='Brain Disease',
+                input_data=json.dumps(input_dict),
+                prediction_result=result,
+                probability=round(probability, 2),
+                model_used=model_type
+            )
+            db.session.add(history)
+            db.session.commit()
+            
+            return redirect(url_for('result', prediction_id=history.id))
+            
+        except Exception as e:
+            flash(f"Error processing prediction: {e}", "danger")
+            return redirect(url_for('predict_brain'))
+            
+    return render_template('predict_brain.html')
+
 @app.route('/result/<int:prediction_id>')
 @login_required
 def result(prediction_id):
@@ -536,6 +620,18 @@ def result(prediction_id):
             feat_list = [inputs.get('Blood Urea', 0), inputs.get('Serum Creatinine', 0), inputs.get('Hemoglobin', 0), inputs.get('Blood Pressure', 0)]
         elif pred.disease_type == 'Liver Disease':
             feat_list = [inputs.get('Bilirubin', 0), inputs.get('Albumin', 0), inputs.get('Alkaline Phosphatase', 0), inputs.get('SGOT/AST', 0), inputs.get('Age', 0)]
+        elif pred.disease_type == 'Brain Disease':
+            def map_binary(val):
+                if isinstance(val, str):
+                    return 1.0 if val.strip().lower() in ['yes', '1', 'true'] else 0.0
+                return float(val or 0.0)
+            feat_list = [
+                float(inputs.get('Headache Intensity', 0)),
+                map_binary(inputs.get('Cognitive Symptoms')),
+                map_binary(inputs.get('Sensorimotor Symptoms')),
+                map_binary(inputs.get('History of Seizures')),
+                float(inputs.get('Age', 0))
+            ]
             
         scaled_feat = scaler.transform([feat_list])
         model_key = f"{disease_key}_{'lr' if alt_model_type == 'Logistic Regression' else 'rf'}"

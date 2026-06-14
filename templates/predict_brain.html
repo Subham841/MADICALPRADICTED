@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Brain Disease Risk Assessment - MediPredict AI{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Header -->
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="bg-warning text-white p-3 rounded-4 d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; background: linear-gradient(135deg, #af40ff 0%, #5b2cbf 100%) !important;">
+                        <i class="fa-solid fa-brain fs-4 animate-pulse"></i>
+                    </div>
+                    <div>
+                        <h2 class="fw-bold mb-0">Brain Disease Risk Assessment</h2>
+                        <p class="text-secondary mb-0">Evaluate patient neurological symptoms to compute anomaly indices.</p>
+                    </div>
+                </div>
+
+                <!-- Form Card -->
+                <div class="card p-4 shadow-sm border-light rounded-4 bg-white">
+                    <form action="{{ url_for('predict_brain') }}" method="POST" class="needs-validation" novalidate>
+                        <div class="row g-4">
+                            <!-- Headache Intensity -->
+                            <div class="col-md-6">
+                                <label for="HeadacheIntensity" class="form-label small fw-semibold">Headache Intensity (0 - 10)</label>
+                                <input type="number" class="form-control" id="HeadacheIntensity" name="HeadacheIntensity" required min="0" max="10" step="0.1" placeholder="e.g. 3.5">
+                                <div class="form-text small">Subjective pain score. 0 represents no headache; 10 represents severe/migraine level.</div>
+                                <div class="invalid-feedback">Please enter a valid intensity value between 0 and 10.</div>
+                            </div>
+
+                            <!-- Age -->
+                            <div class="col-md-6">
+                                <label for="Age" class="form-label small fw-semibold">Age (years)</label>
+                                <input type="number" class="form-control" id="Age" name="Age" required min="18" max="110" step="1" placeholder="e.g. 48">
+                                <div class="form-text small">Patient age in years. Neurological risk profiles adjust dynamically by age.</div>
+                                <div class="invalid-feedback">Please enter a valid age between 18 and 110.</div>
+                            </div>
+
+                            <!-- Cognitive Symptoms -->
+                            <div class="col-md-6">
+                                <label for="CognitiveSymptoms" class="form-label small fw-semibold">Cognitive Symptoms</label>
+                                <select class="form-select" id="CognitiveSymptoms" name="CognitiveSymptoms" required>
+                                    <option value="" disabled selected>Select option...</option>
+                                    <option value="0">No (None observed)</option>
+                                    <option value="1">Yes (Memory loss, confusion, speech changes)</option>
+                                </select>
+                                <div class="form-text small">Any recent confusion, progressive memory deficits, or aphasia/dysphasia.</div>
+                                <div class="invalid-feedback">Please select an option.</div>
+                            </div>
+
+                            <!-- Sensorimotor Symptoms -->
+                            <div class="col-md-6">
+                                <label for="SensorimotorSymptoms" class="form-label small fw-semibold">Sensorimotor Symptoms</label>
+                                <select class="form-select" id="SensorimotorSymptoms" name="SensorimotorSymptoms" required>
+                                    <option value="" disabled selected>Select option...</option>
+                                    <option value="0">No (None observed)</option>
+                                    <option value="1">Yes (Numbness, motor weakness, vision/balance problems)</option>
+                                </select>
+                                <div class="form-text small">Includes paresthesia, loss of limb coordination, hemiparesis, or visual field deficits.</div>
+                                <div class="invalid-feedback">Please select an option.</div>
+                            </div>
+
+                            <!-- History of Seizures -->
+                            <div class="col-md-6">
+                                <label for="HistoryOfSeizures" class="form-label small fw-semibold">History of Seizures</label>
+                                <select class="form-select" id="HistoryOfSeizures" name="HistoryOfSeizures" required>
+                                    <option value="" disabled selected>Select option...</option>
+                                    <option value="0">No history</option>
+                                    <option value="1">Yes (Prior seizure episodes or epilepsy diagnostics)</option>
+                                </select>
+                                <div class="form-text small">Indicates whether the patient has had one or more confirmed seizure occurrences.</div>
+                                <div class="invalid-feedback">Please select an option.</div>
+                            </div>
+
+                            <!-- Model Selector -->
+                            <div class="col-md-6">
+                                <label for="model_used" class="form-label small fw-semibold">Machine Learning Model</label>
+                                <select class="form-select" id="model_used" name="model_used">
+                                    <option value="Random Forest" selected>Random Forest Classifier (Ensemble Trees)</option>
+                                    <option value="Logistic Regression">Logistic Regression Classifier (Linear Probability)</option>
+                                </select>
+                                <div class="form-text small">Select the classifier engine. Accuracy comparison is available in results.</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 justify-content-end mt-5 border-top pt-4">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 text-white" style="background: linear-gradient(135deg, #af40ff 0%, #5b2cbf 100%) !important; border: none;">
+                                Run Prediction <i class="fa-solid fa-wand-magic-sparkles ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Bootstrap form validation
+(function () {
+  'use strict'
+  var forms = document.querySelectorAll('.needs-validation')
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+</script>
+{% endblock %}
